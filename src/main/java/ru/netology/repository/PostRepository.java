@@ -2,7 +2,7 @@ package ru.netology.repository;
 
 import org.springframework.stereotype.Repository;
 import ru.netology.exception.NotFoundException;
-import ru.netology.model.Post;
+import ru.netology.model.PostData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
 public class PostRepository {
-    private Map<Long, Post> posts;
+    private final Map<Long, PostData> posts;
     private long freeId;
 
     public PostRepository() {
@@ -20,25 +20,21 @@ public class PostRepository {
         freeId = 1;
     }
 
-    public List<Post> all() {
-        var res = new ArrayList<Post>(posts.size());
+    public List<PostData> all() {
+        var res = new ArrayList<PostData>(posts.size());
 
-        posts.forEach(
-                (k, v) -> {
-                    res.add(v);
-                }
-        );
+        posts.forEach((k, v) -> res.add(v));
 
         return res;
     }
 
-    public Optional<Post> getById(long id) {
+    public Optional<PostData> getById(long id) {
         var res = posts.getOrDefault(id, null);
 
-        return res == null ? Optional.empty() : Optional.of(res);
+        return (res == null || res.isDeleted()) ? Optional.empty() : Optional.of(res);
     }
 
-    public Post save(Post post) {
+    public PostData save(PostData post) {
         long id;
 
         synchronized (this) {
@@ -55,7 +51,7 @@ public class PostRepository {
 
     public void removeById(long id) throws NotFoundException {
         if (posts.remove(id) == null) {
-            throw new NotFoundException("ID " + id + " not found");
+            throw new NotFoundException();
         }
     }
 }
