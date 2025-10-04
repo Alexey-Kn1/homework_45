@@ -1,19 +1,29 @@
 package ru.netology.model;
 
-public class Post {
+public class PostData {
     private long id;
     private String content;
+    private boolean deleted;
 
-    public Post() {
+    public PostData() {
     }
 
-    public Post(long id, String content) {
+    public PostData(Post post) {
+        this(post.getId(), post.getContent(), false);
+    }
+
+    public PostData(long id, String content, boolean deleted) {
         this.id = id;
         this.content = content;
+        this.deleted = deleted;
     }
 
-    public Post(PostData data) {
-        this(data.getId(), data.getContent());
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 
     public long getId() {
